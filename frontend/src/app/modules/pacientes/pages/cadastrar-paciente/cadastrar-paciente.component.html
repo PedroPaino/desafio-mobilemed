@@ -1,0 +1,98 @@
+<div class="container">
+  <div class="header">
+    <h1>Cadastrar Paciente</h1>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+    <div class="field">
+      <label for="nome">Nome *</label>
+      <input
+        id="nome"
+        type="text"
+        formControlName="nome"
+        [class.invalid]="isInvalid('nome')"
+      />
+      @if (hasError('nome', 'required')) {
+        <span class="error-msg">Nome é obrigatório</span>
+      }
+      @if (hasError('nome', 'minlength')) {
+        <span class="error-msg">Nome deve ter no mínimo 3 caracteres</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="documento">Documento (CPF) *</label>
+      <input
+        id="documento"
+        type="text"
+        formControlName="documento"
+        [class.invalid]="isInvalid('documento')"
+        placeholder="Apenas números"
+      />
+      @if (hasError('documento', 'required')) {
+        <span class="error-msg">Documento é obrigatório</span>
+      }
+      @if (hasError('documento', 'minlength')) {
+        <span class="error-msg">Documento deve ter no mínimo 11 caracteres</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="dataNascimento">Data de Nascimento *</label>
+      <input
+        id="dataNascimento"
+        type="date"
+        formControlName="dataNascimento"
+        [class.invalid]="isInvalid('dataNascimento')"
+      />
+      @if (hasError('dataNascimento', 'required')) {
+        <span class="error-msg">Data de nascimento é obrigatória</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        [class.invalid]="isInvalid('email')"
+      />
+      @if (hasError('email', 'email')) {
+        <span class="error-msg">Email inválido</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="telefone">Telefone</label>
+      <input id="telefone" type="text" formControlName="telefone" />
+    </div>
+
+    @if (state() === 'error') {
+      <div class="alert alert-error">
+        ❌ {{ errorMessage() }}
+      </div>
+    }
+
+    @if (state() === 'success') {
+      <div class="alert alert-success">
+        ✅ Paciente cadastrado com sucesso! Redirecionando...
+      </div>
+    }
+
+    <div class="actions">
+      <a routerLink="/pacientes" class="btn">Cancelar</a>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="state() === 'submitting'"
+      >
+        @if (state() === 'submitting') {
+          Salvando...
+        } @else {
+          Salvar
+        }
+      </button>
+    </div>
+  </form>
+</div>

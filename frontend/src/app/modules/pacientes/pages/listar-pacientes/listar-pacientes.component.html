@@ -1,0 +1,61 @@
+<div class="container">
+  <div class="header">
+    <h1>Pacientes</h1>
+    <a routerLink="/pacientes/novo" class="btn btn-primary">+ Novo Paciente</a>
+  </div>
+
+  @if (state() === 'loading') {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Carregando pacientes...</p>
+    </div>
+  }
+
+  @if (state() === 'error') {
+    <div class="error">
+      <p>❌ {{ errorMessage() }}</p>
+      <button class="btn btn-primary" (click)="carregar()">
+        Tentar novamente
+      </button>
+    </div>
+  }
+
+  @if (state() === 'success') {
+    @if (pacientes().length === 0) {
+      <div class="empty">
+        <p>Nenhum paciente cadastrado.</p>
+      </div>
+    } @else {
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Documento</th>
+            <th>Data Nascimento</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (paciente of pacientes(); track paciente.id) {
+            <tr>
+              <td>{{ paciente.nome }}</td>
+              <td>{{ paciente.documento }}</td>
+              <td>{{ paciente.dataNascimento | date:'dd/MM/yyyy' }}</td>
+              <td>{{ paciente.email || '-' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <button (click)="paginaAnterior()" [disabled]="page() === 1" class="btn">
+          ← Anterior
+        </button>
+        <span>Página {{ page() }} de {{ totalPages() }} ({{ total() }} registros)</span>
+        <button (click)="proximaPagina()" [disabled]="page() >= totalPages()" class="btn">
+          Próxima →
+        </button>
+      </div>
+    }
+  }
+</div>

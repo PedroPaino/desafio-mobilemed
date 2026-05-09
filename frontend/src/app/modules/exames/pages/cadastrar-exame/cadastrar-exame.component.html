@@ -1,0 +1,107 @@
+<div class="container">
+  <div class="header">
+    <h1>Cadastrar Exame</h1>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+    <div class="field">
+      <label for="pacienteId">Paciente *</label>
+      <select
+        id="pacienteId"
+        formControlName="pacienteId"
+        [class.invalid]="isInvalid('pacienteId')"
+      >
+        <option value="">Selecione um paciente</option>
+        @for (p of pacientes(); track p.id) {
+          <option [value]="p.id">{{ p.nome }} - {{ p.documento }}</option>
+        }
+      </select>
+      @if (hasError('pacienteId', 'required')) {
+        <span class="error-msg">Paciente é obrigatório</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="modalidade">Modalidade DICOM *</label>
+      <select
+        id="modalidade"
+        formControlName="modalidade"
+        [class.invalid]="isInvalid('modalidade')"
+      >
+        <option value="">Selecione a modalidade</option>
+        @for (m of modalidades; track m) {
+          <option [value]="m">{{ m }}</option>
+        }
+      </select>
+      @if (hasError('modalidade', 'required')) {
+        <span class="error-msg">Modalidade é obrigatória</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="descricao">Descrição *</label>
+      <input
+        id="descricao"
+        type="text"
+        formControlName="descricao"
+        [class.invalid]="isInvalid('descricao')"
+      />
+      @if (hasError('descricao', 'required')) {
+        <span class="error-msg">Descrição é obrigatória</span>
+      }
+      @if (hasError('descricao', 'minlength')) {
+        <span class="error-msg">Descrição deve ter no mínimo 3 caracteres</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="dataRealizacao">Data de Realização *</label>
+      <input
+        id="dataRealizacao"
+        type="datetime-local"
+        formControlName="dataRealizacao"
+        [class.invalid]="isInvalid('dataRealizacao')"
+      />
+      @if (hasError('dataRealizacao', 'required')) {
+        <span class="error-msg">Data de realização é obrigatória</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="idempotencyKey">Idempotency Key *</label>
+      <div class="key-row">
+        <input
+          id="idempotencyKey"
+          type="text"
+          formControlName="idempotencyKey"
+          [class.invalid]="isInvalid('idempotencyKey')"
+        />
+        <button type="button" class="btn btn-small" (click)="regenerateKey()">
+          🔄 Gerar nova
+        </button>
+      </div>
+      <small>Gerada automaticamente. Reenvio com mesma key não duplica o exame.</small>
+    </div>
+
+    @if (state() === 'error') {
+      <div class="alert alert-error">❌ {{ errorMessage() }}</div>
+    }
+
+    @if (state() === 'success') {
+      <div class="alert alert-success">
+        ✅ Exame cadastrado com sucesso! Redirecionando...
+      </div>
+    }
+
+    <div class="actions">
+      <a routerLink="/exames" class="btn">Cancelar</a>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="state() === 'submitting'"
+      >
+        @if (state() === 'submitting') { Salvando... } @else { Salvar }
+      </button>
+    </div>
+  </form>
+</div>

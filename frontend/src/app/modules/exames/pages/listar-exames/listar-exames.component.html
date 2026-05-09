@@ -1,0 +1,63 @@
+<div class="container">
+  <div class="header">
+    <h1>Exames</h1>
+    <a routerLink="/exames/novo" class="btn btn-primary">+ Novo Exame</a>
+  </div>
+
+  @if (state() === 'loading') {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Carregando exames...</p>
+    </div>
+  }
+
+  @if (state() === 'error') {
+    <div class="error">
+      <p>❌ {{ errorMessage() }}</p>
+      <button class="btn btn-primary" (click)="carregar()">
+        Tentar novamente
+      </button>
+    </div>
+  }
+
+  @if (state() === 'success') {
+    @if (exames().length === 0) {
+      <div class="empty">
+        <p>Nenhum exame cadastrado.</p>
+      </div>
+    } @else {
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Modalidade</th>
+            <th>Descrição</th>
+            <th>Data Realização</th>
+            <th>Paciente</th>
+            <th>Idempotency Key</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (exame of exames(); track exame.id) {
+            <tr>
+              <td><span class="badge">{{ exame.modalidade }}</span></td>
+              <td>{{ exame.descricao }}</td>
+              <td>{{ exame.dataRealizacao | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ exame.paciente?.nome || exame.pacienteId }}</td>
+              <td><code>{{ exame.idempotencyKey }}</code></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <button (click)="paginaAnterior()" [disabled]="page() === 1" class="btn">
+          ← Anterior
+        </button>
+        <span>Página {{ page() }} de {{ totalPages() }} ({{ total() }} registros)</span>
+        <button (click)="proximaPagina()" [disabled]="page() >= totalPages()" class="btn">
+          Próxima →
+        </button>
+      </div>
+    }
+  }
+</div>
