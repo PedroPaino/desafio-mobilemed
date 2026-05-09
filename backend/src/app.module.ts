@@ -3,6 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { databaseConfig } from './config/database.config';
 import { PacientesModule } from './modules/pacientes/pacientes.module';
+import { ExamesModule } from './modules/exames/exames.module';
+
+  
 
 @Module({
   imports: [
@@ -12,6 +15,7 @@ import { PacientesModule } from './modules/pacientes/pacientes.module';
       useFactory: databaseConfig,
     }),
     PacientesModule,
+    ExamesModule,
   ],
 })
 export class AppModule {}
