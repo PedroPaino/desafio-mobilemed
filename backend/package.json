@@ -75,7 +75,9 @@
       "!src/main.ts",
       "!src/**/*.module.ts",
       "!src/**/*.dto.ts",
-      "!src/**/*.entity.ts"
+      "!src/**/*.entity.ts",
+      "!src/config/**",
+      "!src/**/index.ts"
     ],
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
