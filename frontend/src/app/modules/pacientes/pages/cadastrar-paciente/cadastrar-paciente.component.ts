@@ -1,10 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { PacientesService } from '../../services/pacientes.service';
 
@@ -27,11 +23,32 @@ export class CadastrarPacienteComponent {
 
   form = this.fb.nonNullable.group({
     nome: ['', [Validators.required, Validators.minLength(3)]],
-    documento: ['', [Validators.required, Validators.minLength(11)]],
+    documento: ['', [Validators.required, Validators.pattern(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/)]],
     dataNascimento: ['', Validators.required],
-    email: ['', Validators.email],
-    telefone: [''],
+    email: ['', [Validators.required, Validators.email]],
+    telefone: ['', Validators.required],
   });
+
+  formatCpf(event: Event) {
+    const input = event.target as HTMLInputElement;
+    let v = input.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+    else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+    else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+    this.form.get('documento')!.setValue(v, { emitEvent: false });
+    input.value = v;
+  }
+
+  formatTelefone(event: Event) {
+    const input = event.target as HTMLInputElement;
+    let v = input.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length === 11) v = v.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    else if (v.length >= 7) v = v.replace(/(\d{2})(\d{4,5})(\d{0,4})/, '($1) $2-$3');
+    else if (v.length >= 3) v = v.replace(/(\d{2})(\d{1,5})/, '($1) $2');
+    else if (v.length > 0) v = `(${v}`;
+    this.form.get('telefone')!.setValue(v, { emitEvent: false });
+    input.value = v;
+  }
 
   onSubmit() {
     if (this.form.invalid) {
@@ -42,11 +59,13 @@ export class CadastrarPacienteComponent {
     this.state.set('submitting');
     this.errorMessage.set('');
 
-    const payload = this.form.getRawValue();
+    const raw = this.form.getRawValue();
     const dto = {
-      ...payload,
-      email: payload.email || undefined,
-      telefone: payload.telefone || undefined,
+      nome: raw.nome,
+      documento: raw.documento.replace(/\D/g, ''),
+      dataNascimento: raw.dataNascimento,
+      email: raw.email,
+      telefone: raw.telefone.replace(/\D/g, ''),
     };
 
     this.pacientesService.create(dto).subscribe({

@@ -1,97 +1,109 @@
 <div class="container">
-  <div class="header">
+  <div class="page-header">
+    <a routerLink="/pacientes" class="back-link">← Pacientes</a>
     <h1>Cadastrar Paciente</h1>
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
-    <div class="field">
-      <label for="nome">Nome *</label>
-      <input
-        id="nome"
-        type="text"
-        formControlName="nome"
-        [class.invalid]="isInvalid('nome')"
-      />
-      @if (hasError('nome', 'required')) {
-        <span class="error-msg">Nome é obrigatório</span>
-      }
-      @if (hasError('nome', 'minlength')) {
-        <span class="error-msg">Nome deve ter no mínimo 3 caracteres</span>
-      }
-    </div>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form card">
+    <div class="form-grid">
+      <div class="field col-full">
+        <label for="nome">Nome <span class="required">*</span></label>
+        <input
+          id="nome"
+          type="text"
+          formControlName="nome"
+          placeholder="Nome completo"
+          [class.invalid]="isInvalid('nome')"
+          autocomplete="name"
+        />
+        @if (hasError('nome', 'required')) {
+          <span class="error-msg">Nome é obrigatório</span>
+        }
+        @if (hasError('nome', 'minlength')) {
+          <span class="error-msg">Nome deve ter no mínimo 3 caracteres</span>
+        }
+      </div>
 
-    <div class="field">
-      <label for="documento">Documento (CPF) *</label>
-      <input
-        id="documento"
-        type="text"
-        formControlName="documento"
-        [class.invalid]="isInvalid('documento')"
-        placeholder="Apenas números"
-      />
-      @if (hasError('documento', 'required')) {
-        <span class="error-msg">Documento é obrigatório</span>
-      }
-      @if (hasError('documento', 'minlength')) {
-        <span class="error-msg">Documento deve ter no mínimo 11 caracteres</span>
-      }
-    </div>
+      <div class="field">
+        <label for="documento">CPF <span class="required">*</span></label>
+        <input
+          id="documento"
+          type="text"
+          formControlName="documento"
+          placeholder="000.000.000-00"
+          maxlength="14"
+          [class.invalid]="isInvalid('documento')"
+          (input)="formatCpf($event)"
+          autocomplete="off"
+        />
+        @if (hasError('documento', 'required')) {
+          <span class="error-msg">CPF é obrigatório</span>
+        }
+        @if (hasError('documento', 'pattern')) {
+          <span class="error-msg">CPF inválido — use o formato 000.000.000-00</span>
+        }
+      </div>
 
-    <div class="field">
-      <label for="dataNascimento">Data de Nascimento *</label>
-      <input
-        id="dataNascimento"
-        type="date"
-        formControlName="dataNascimento"
-        [class.invalid]="isInvalid('dataNascimento')"
-      />
-      @if (hasError('dataNascimento', 'required')) {
-        <span class="error-msg">Data de nascimento é obrigatória</span>
-      }
-    </div>
+      <div class="field">
+        <label for="dataNascimento">Data de Nascimento <span class="required">*</span></label>
+        <input
+          id="dataNascimento"
+          type="date"
+          formControlName="dataNascimento"
+          [class.invalid]="isInvalid('dataNascimento')"
+        />
+        @if (hasError('dataNascimento', 'required')) {
+          <span class="error-msg">Data de nascimento é obrigatória</span>
+        }
+      </div>
 
-    <div class="field">
-      <label for="email">Email</label>
-      <input
-        id="email"
-        type="email"
-        formControlName="email"
-        [class.invalid]="isInvalid('email')"
-      />
-      @if (hasError('email', 'email')) {
-        <span class="error-msg">Email inválido</span>
-      }
-    </div>
+      <div class="field">
+        <label for="email">Email <span class="required">*</span></label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="exemplo@email.com"
+          [class.invalid]="isInvalid('email')"
+          autocomplete="email"
+        />
+        @if (hasError('email', 'required')) {
+          <span class="error-msg">Email é obrigatório</span>
+        }
+        @if (hasError('email', 'email')) {
+          <span class="error-msg">Email inválido</span>
+        }
+      </div>
 
-    <div class="field">
-      <label for="telefone">Telefone</label>
-      <input id="telefone" type="text" formControlName="telefone" />
+      <div class="field">
+        <label for="telefone">Telefone <span class="required">*</span></label>
+        <input
+          id="telefone"
+          type="text"
+          formControlName="telefone"
+          placeholder="(00) 00000-0000"
+          maxlength="15"
+          [class.invalid]="isInvalid('telefone')"
+          (input)="formatTelefone($event)"
+          autocomplete="tel"
+        />
+        @if (hasError('telefone', 'required')) {
+          <span class="error-msg">Telefone é obrigatório</span>
+        }
+      </div>
     </div>
 
     @if (state() === 'error') {
-      <div class="alert alert-error">
-        ❌ {{ errorMessage() }}
-      </div>
+      <div class="alert alert-error">{{ errorMessage() }}</div>
     }
-
     @if (state() === 'success') {
-      <div class="alert alert-success">
-        ✅ Paciente cadastrado com sucesso! Redirecionando...
-      </div>
+      <div class="alert alert-success">Paciente cadastrado com sucesso! Redirecionando...</div>
     }
 
     <div class="actions">
       <a routerLink="/pacientes" class="btn">Cancelar</a>
-      <button
-        type="submit"
-        class="btn btn-primary"
-        [disabled]="state() === 'submitting'"
-      >
-        @if (state() === 'submitting') {
-          Salvando...
-        } @else {
-          Salvar
-        }
+      <button type="submit" class="btn btn-primary" [disabled]="state() === 'submitting'">
+        {{ state() === 'submitting' ? 'Salvando...' : 'Salvar' }}
       </button>
     </div>
   </form>

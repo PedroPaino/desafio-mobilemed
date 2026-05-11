@@ -1,6 +1,9 @@
 <div class="container">
-  <div class="header">
-    <h1>Pacientes</h1>
+  <div class="page-header">
+    <div>
+      <h1>Pacientes</h1>
+      <p class="subtitle">Gerencie os pacientes cadastrados no sistema</p>
+    </div>
     <a routerLink="/pacientes/novo" class="btn btn-primary">+ Novo Paciente</a>
   </div>
 
@@ -13,48 +16,50 @@
 
   @if (state() === 'error') {
     <div class="error">
-      <p>❌ {{ errorMessage() }}</p>
-      <button class="btn btn-primary" (click)="carregar()">
-        Tentar novamente
-      </button>
+      <p>Não foi possível carregar os pacientes.</p>
+      <p class="error-detail">{{ errorMessage() }}</p>
+      <button class="btn btn-primary" (click)="carregar()">Tentar novamente</button>
     </div>
   }
 
   @if (state() === 'success') {
     @if (pacientes().length === 0) {
-      <div class="empty">
-        <p>Nenhum paciente cadastrado.</p>
+      <div class="empty card">
+        <p class="empty-icon">👤</p>
+        <p>Nenhum paciente cadastrado ainda.</p>
+        <a routerLink="/pacientes/novo" class="btn btn-primary">Cadastrar primeiro paciente</a>
       </div>
     } @else {
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Documento</th>
-            <th>Data Nascimento</th>
-            <th>Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (paciente of pacientes(); track paciente.id) {
+      <div class="card">
+        <table class="table">
+          <thead>
             <tr>
-              <td>{{ paciente.nome }}</td>
-              <td>{{ paciente.documento }}</td>
-              <td>{{ paciente.dataNascimento | date:'dd/MM/yyyy' }}</td>
-              <td>{{ paciente.email || '-' }}</td>
+              <th>Nome</th>
+              <th>Documento</th>
+              <th>Data Nascimento</th>
+              <th>Email</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (paciente of pacientes(); track paciente.id) {
+              <tr>
+                <td class="td-name">{{ paciente.nome }}</td>
+                <td class="td-mono">{{ paciente.documento }}</td>
+                <td>{{ paciente.dataNascimento | date:'dd/MM/yyyy' }}</td>
+                <td class="td-email">{{ paciente.email || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
 
-      <div class="pagination">
-        <button (click)="paginaAnterior()" [disabled]="page() === 1" class="btn">
-          ← Anterior
-        </button>
-        <span>Página {{ page() }} de {{ totalPages() }} ({{ total() }} registros)</span>
-        <button (click)="proximaPagina()" [disabled]="page() >= totalPages()" class="btn">
-          Próxima →
-        </button>
+        <div class="pagination">
+          <span class="pagination-info">{{ total() }} registro{{ total() !== 1 ? 's' : '' }}</span>
+          <div class="pagination-controls">
+            <button (click)="paginaAnterior()" [disabled]="page() === 1" class="btn">← Anterior</button>
+            <span class="page-indicator">{{ page() }} / {{ totalPages() }}</span>
+            <button (click)="proximaPagina()" [disabled]="page() >= totalPages()" class="btn">Próxima →</button>
+          </div>
+        </div>
       </div>
     }
   }
